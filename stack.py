@@ -21,7 +21,7 @@ Examples
 
 
 from keras.models import Model
-from keras.layers import Input, Dense, Activation, Add, Multiply
+from keras.layers import Input, Dense, Activation, Conv2D, Add, Multiply
 from keras.utils import plot_model
 
 def example_0():
@@ -70,4 +70,18 @@ def example_2():
         )
     model = Model(input, outputs)
     plot_model(model, to_file='example_2.png', show_shapes=True, show_layer_names=False)
+
+def example_residual_connection():
+    input = Input(shape=(256, 256, 3))
+    output = stack(
+        input,
+        [(Conv2D(3, (3, 3), padding='same'),
+          Activation('relu'),
+          Conv2D(3, (3, 3), padding='same')),
+         lambda x: x],
+        Add(),
+        Activation('relu')
+    )
+    model = Model(input, output)
+    plot_model(model, to_file='example_residual_connection.png', show_shapes=True, show_layer_names=False)
 
