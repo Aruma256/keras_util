@@ -1,12 +1,12 @@
-def stack(input, *nodes):
+def build(input, *nodes):
     x = input
     for node in nodes:
         if callable(node):
             x = node(x)
         elif isinstance(node, list):
-            x = [stack(x, branch) for branch in node]
+            x = [build(x, branch) for branch in node]
         elif isinstance(node, tuple):
-            x = stack(x, *node)
+            x = build(x, *node)
         else:
             x = node
     return x
@@ -27,7 +27,7 @@ from keras.utils import plot_model
 
 def example_0():
     input = Input((10,))
-    output = stack(
+    output = build(
         input,
         Dense(10, activation='relu'),
         Dense(10, activation='relu')
@@ -37,7 +37,7 @@ def example_0():
 
 def example_1():
     input = Input((10,))
-    output = stack(
+    output = build(
         input,
         Dense(10),
         [Dense(11, activation='relu'),
@@ -52,7 +52,7 @@ def example_1():
 
 def example_2():
     input = Input((10,))
-    outputs = stack(
+    outputs = build(
         input,
         Dense(11),
         Activation('relu'),
@@ -74,7 +74,7 @@ def example_2():
 
 def example_residual_connection():
     input = Input(shape=(256, 256, 3))
-    output = stack(
+    output = build(
         input,
         [(Conv2D(3, (3, 3), padding='same'),
           Activation('relu'),
@@ -89,7 +89,7 @@ def example_residual_connection():
 def example_multi_input_and_multi_output():
     main_input = Input(shape=(100,), dtype='int32', name='main_input')
     auxiliary_input = Input(shape=(5,), name='aux_input')
-    outputs = stack(
+    outputs = build(
         main_input,
         Embedding(output_dim=512, input_dim=10000, input_length=100),
         LSTM(32),
